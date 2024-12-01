@@ -1,0 +1,71 @@
+# Node modules
+node_modules/
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build output
+dist/
+!.gitkeep
+
+# Dependency directories
+.jspm_packages/
+
+# Testing output
+coverage/
+
+# Vue CLI service files
+.vscode/
+.DS_Store
+*.local
+.env.local
+.env.*.local
+
+# Production environment variables
+.env
+.env.*.local
+
+# Editor settings
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# System files
+Thumbs.db
+*.swp
+*.lock
+*.tmp
+*.bak
+*.old
+*.orig
+
+# Lint cache
+eslintcache
+
+# TypeScript-specific files (if using TypeScript)
+*.tsbuildinfo
+
+# Yarn files
+.pnp.*
+.pnp.js
+
+# Webpack-related files
+.cache/
+
+# Optional npm cache directory
+.npm/
+
+# Vue-specific files
+public/*.hot-update.json
+*.log
+*.log.*
+
+# Coverage output from testing libraries
+coverage/
+
+# Temp directories
+tmp/
+temp/
