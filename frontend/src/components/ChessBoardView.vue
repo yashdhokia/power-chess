@@ -1,77 +1,104 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import socket from "../../plugins/socket.js";
+import { io, Socket } from "socket.io-client";
+type ChessBoard = Record<string, null>;
+type Piece = { square: string; piece: string | null };
+
 const column = ref<string[]>(["8", "7", "6", "5", "4", "3", "2", "1"]);
 const row = ref<string[]>(["a", "b", "c", "d", "e", "f", "g", "h"]);
-type DraggedItem = { square: string; piece: string | null };
-const draggedItem = ref<DraggedItem>({ square: "", piece: null });
-const sourceContainer = ref<string>([]);
-type ChessBoard = Record<string, null>;
+
+const boxSelectedFlag = ref<boolean>(true);
+const peiceInfo = ref<Piece>({ square: "", piece: null });
 const chessMetric = ref<ChessBoard>({});
-const blackKing = ref<string>("src/assets/chessPieces/black_king.svg");
-const whiteKing = ref<string>("src/assets/chessPieces/white_king.svg");
-const blackQueen = ref<string>("src/assets/chessPieces/black_queen.svg");
-const whiteQueen = ref<string>("src/assets/chessPieces/white_queen.svg");
-const blackRook = ref<string>("src/assets/chessPieces/black_rook.svg");
-const whiteRook = ref<string>("src/assets/chessPieces/white_rook.svg");
-const blackKnight = ref<string>("src/assets/chessPieces/black_knight.svg");
-const whiteKnight = ref<string>("src/assets/chessPieces/white_knight.svg");
-const blackBishop = ref<string>("src/assets/chessPieces/black_bishop.svg");
-const whiteBishop = ref<string>("src/assets/chessPieces/white_bishop.svg");
-const blackPawn = ref<string>("src/assets/chessPieces/black_pawn.svg");
-const whitePawn = ref<string>("src/assets/chessPieces/white_pawn.svg");
 
-  setInitialBoard(chessMetric);
+const k = ref<string>("src/assets/chessPieces/black_king.svg");
+const K = ref<string>("src/assets/chessPieces/white_king.svg");
+const q = ref<string>("src/assets/chessPieces/black_queen.svg");
+const Q = ref<string>("src/assets/chessPieces/white_queen.svg");
+const r = ref<string>("src/assets/chessPieces/black_rook.svg");
+const R = ref<string>("src/assets/chessPieces/white_rook.svg");
+const n = ref<string>("src/assets/chessPieces/black_knight.svg");
+const N = ref<string>("src/assets/chessPieces/white_knight.svg");
+const b = ref<string>("src/assets/chessPieces/black_bishop.svg");
+const B = ref<string>("src/assets/chessPieces/white_bishop.svg");
+const p = ref<string>("src/assets/chessPieces/black_pawn.svg");
+const P = ref<string>("src/assets/chessPieces/white_pawn.svg");
+const socket: Socket = io("http://localhost:3000");
 
+// onMounted(() => {
+//   socket.on("playerRole", (playerRole) => {
+//     console.log(playerRole);
+//   });
+// });
+
+setInitialBoard(chessMetric);
 function setInitialBoard() {
-  chessMetric.value.a1 = whiteRook.value;
-  chessMetric.value.h1 = whiteRook.value;
-  chessMetric.value.b1 = whiteKnight.value;
-  chessMetric.value.g1 = whiteKnight.value;
-  chessMetric.value.c1 = whiteBishop.value;
-  chessMetric.value.f1 = whiteBishop.value;
-  chessMetric.value.a8 = blackRook.value;
-  chessMetric.value.h8 = blackRook.value;
-  chessMetric.value.b8 = blackKnight.value;
-  chessMetric.value.g8 = blackKnight.value;
-  chessMetric.value.c8 = blackBishop.value;
-  chessMetric.value.f8 = blackBishop.value;
-  chessMetric.value.d1 = whiteQueen.value;
-  chessMetric.value.e1 = whiteKing.value;
-  chessMetric.value.d8 = blackQueen.value;
-  chessMetric.value.e8 = blackKing.value;
+  chessMetric.value.a1 = R.value;
+  chessMetric.value.h1 = R.value;
+  chessMetric.value.b1 = N.value;
+  chessMetric.value.g1 = N.value;
+  chessMetric.value.c1 = B.value;
+  chessMetric.value.f1 = B.value;
+  chessMetric.value.a8 = r.value;
+  chessMetric.value.h8 = r.value;
+  chessMetric.value.b8 = n.value;
+  chessMetric.value.g8 = n.value;
+  chessMetric.value.c8 = b.value;
+  chessMetric.value.f8 = b.value;
+  chessMetric.value.d1 = Q.value;
+  chessMetric.value.e1 = K.value;
+  chessMetric.value.d8 = q.value;
+  chessMetric.value.e8 = k.value;
 
-  chessMetric.value.a2 = whitePawn.value;
-  chessMetric.value.b2 = whitePawn.value;
-  chessMetric.value.c2 = whitePawn.value;
-  chessMetric.value.d2 = whitePawn.value;
-  chessMetric.value.e2 = whitePawn.value;
-  chessMetric.value.f2 = whitePawn.value;
-  chessMetric.value.g2 = whitePawn.value;
-  chessMetric.value.h2 = whitePawn.value;
+  chessMetric.value.a2 = P.value;
+  chessMetric.value.b2 = P.value;
+  chessMetric.value.c2 = P.value;
+  chessMetric.value.d2 = P.value;
+  chessMetric.value.e2 = P.value;
+  chessMetric.value.f2 = P.value;
+  chessMetric.value.g2 = P.value;
+  chessMetric.value.h2 = P.value;
 
-  chessMetric.value.a7 = blackPawn.value;
-  chessMetric.value.b7 = blackPawn.value;
-  chessMetric.value.c7 = blackPawn.value;
-  chessMetric.value.d7 = blackPawn.value;
-  chessMetric.value.e7 = blackPawn.value;
-  chessMetric.value.f7 = blackPawn.value;
-  chessMetric.value.g7 = blackPawn.value;
-  chessMetric.value.h7 = blackPawn.value;
+  chessMetric.value.a7 = p.value;
+  chessMetric.value.b7 = p.value;
+  chessMetric.value.c7 = p.value;
+  chessMetric.value.d7 = p.value;
+  chessMetric.value.e7 = p.value;
+  chessMetric.value.f7 = p.value;
+  chessMetric.value.g7 = p.value;
+  chessMetric.value.h7 = p.value;
 }
 function startDrag(startSquare: string, pieceInfo: string) {
-  draggedItem.value.square = startSquare;
-  draggedItem.value.piece = pieceInfo;
+  peiceInfo.value.square = startSquare;
+  peiceInfo.value.piece = pieceInfo;
 }
 
 function onDrop(targetSquare: string) {
-  if (draggedItem.value.square && draggedItem.value.square !== targetSquare) {
-    chessMetric.value[targetSquare] = draggedItem.value.piece || ""; // Move the piece to the target
-    chessMetric.value[draggedItem.value.square] = ""; // Clear the starting square
-  }
+    if (peiceInfo.value.square && peiceInfo.value.square !== targetSquare) {
+      chessMetric.value[targetSquare] = peiceInfo.value.piece || ""; // Move the piece to the target
+      chessMetric.value[peiceInfo.value.square] = ""; // Clear the starting square
+    }
+    // Reset dragged item
+    peiceInfo.value = { square: "", piece: null };
+}
 
-  // Reset dragged item
-  draggedItem.value = { square: "", piece: null };
+function selectPiece(selectedPieceSquare: string, selectedPiece: string) {
+  if (boxSelectedFlag) {
+    peiceInfo.value.square = selectedPieceSquare;
+    peiceInfo.value.piece = selectedPiece;
+    boxSelectedFlag.value = !boxSelectedFlag.value;
+  }
+}
+
+function dropPiece(droppedSquare: string) {
+    if (boxSelectedFlag && peiceInfo.value.square !== droppedSquare) {
+      chessMetric.value[droppedSquare] = peiceInfo.value.piece || ""; // Move the piece to the target
+      chessMetric.value[peiceInfo.value.square] = "";
+      boxSelectedFlag.value = !boxSelectedFlag.value;
+
+      // Reset dragged item
+      peiceInfo.value = { square: "", piece: null };
+    }
 }
 </script>
 
@@ -86,6 +113,7 @@ function onDrop(targetSquare: string) {
         :style="{ color: (rowIndex + colIndex) % 2 === 0 ? '#5e8cad' : '#fff' }"
         @dragover.prevent
         @drop="onDrop(row + col)"
+        @click="dropPiece(row + col)"
       >
         <div v-if="row === 'a'" :class="['col-label']">
           {{ col }}
@@ -97,6 +125,7 @@ function onDrop(targetSquare: string) {
           :src="chessMetric[row + col]"
           :draggable="true"
           @dragstart="startDrag(row + col, chessMetric[row + col])"
+          @click="selectPiece(row + col, chessMetric[row + col])"
         />
       </div>
     </div>

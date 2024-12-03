@@ -42,6 +42,7 @@ io.on("connection", (socket) => {
             if(chess.turn() == 'w' && socket.id !== player.white) return;
             if(chess.turn() == 'b' && socket.id !== player.black) return;
             const result = chess.move(move);
+            console.log(result);
             if(result){
                 currentPlayer = chess.turn();
                 io.emit("move", move);
