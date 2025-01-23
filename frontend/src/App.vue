@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import ChessBoardView from './components/ChessBoardView.vue';
+import ClickAndMove from './components/ClickAndMove.vue';
+import OverrideClickAndMove from './components/OverrideClickAndMove.vue';
 </script>
 
 <template>
   <div>
     <ChessBoardView />
+    <ClickAndMove /> 
+    <OverrideClickAndMove />
   </div>
 </template>
 
