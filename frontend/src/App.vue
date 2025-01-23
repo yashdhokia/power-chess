@@ -7,8 +7,6 @@ import OverrideClickAndMove from './components/OverrideClickAndMove.vue';
 <template>
   <div>
     <ChessBoardView />
-    <ClickAndMove /> 
-    <OverrideClickAndMove />
   </div>
 </template>
 

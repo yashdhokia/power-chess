@@ -92,22 +92,17 @@ function onDrop(targetSquare: string) {
   socket.emit("move", moveInfo.value);
 }
 
-const selectPiece = (startSquare: string) => {
-  console.log("============== select peice",peiceInfo.value);
-  if(peiceInfo.value === ''){
-    console.log("started");
-    peiceInfo.value = startSquare;
-  }
-}
-
-const dropPiece = (targetSquare: string) => {
-  console.log("============== drop peice",peiceInfo.value);
-  if(peiceInfo.value !== ''){
-  console.log("end");
-  moveInfo.value.from = peiceInfo.value ?? "";
-  moveInfo.value.to = targetSquare;
-  peiceInfo.value = '';
-  socket.emit("move", moveInfo.value);
+const movePiece = (square: string) => {
+  if(peiceInfo.value === '') {
+    console.log("move started", square);
+    peiceInfo.value = square;
+  } else {
+    console.log("move end", square);
+    moveInfo.value.from = peiceInfo.value ?? "";
+    moveInfo.value.to = square;
+    peiceInfo.value = '';
+    console.log("---", moveInfo.value.from, moveInfo.value.to);
+    socket.emit("move",moveInfo.value);
   }
 }
 
@@ -133,7 +128,7 @@ const dropPiece = (targetSquare: string) => {
         }"
         @dragover.prevent
         @drop="onDrop(row + col)"
-        @click.stop="dropPiece(row + col)"
+        @click="movePiece(row + col)"
       >
         <div
           v-if="
@@ -155,8 +150,6 @@ const dropPiece = (targetSquare: string) => {
           :src="chessMetric[row + col]?.img"
           :draggable="chessMetric[row + col]?.color == color"
           @dragstart="startDrag(row + col)"
-          @click.stop="selectPiece(row + col)"
-          @click="dropPiece(row + col)"
         />
       </div>
     </div>
