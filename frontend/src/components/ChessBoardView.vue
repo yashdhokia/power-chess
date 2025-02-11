@@ -77,6 +77,31 @@ function setInitialBoard(chessMetric) {
 socket.on("move", (move,result) => {
   chessMetric.value[move.to] = chessMetric.value[move.from];
   chessMetric.value[move.from] = null;
+  if(result.san == 'O-O') {
+    console.log('small castle')
+    if(result.color == 'w'){
+      chessMetric.value.f1 = chessMetric.value.h1;
+      chessMetric.value.h1 = null;
+    }
+    else {
+      chessMetric.value.f8 = chessMetric.value.h8;
+      chessMetric.value.h8 = null;
+    }
+  }if(result.san == 'O-O-O'){
+    console.log('long castle')
+    if(result.color == 'w'){
+      chessMetric.value.c1 = chessMetric.value.a1;
+      chessMetric.value.a1 = null;
+    }
+    else {
+      chessMetric.value.c8 = chessMetric.value.a8;
+      chessMetric.value.a8 = null;
+    }
+  }
+  if(result.flags.includes("e")){
+    const capturedPawnSquare = move.to[0] + move.from[1];
+    chessMetric.value[capturedPawnSquare] = null;
+  }
   currentTurn.value = (result.color =='b') ? 'w' : 'b';
   console.log('=============',result)
 });
@@ -90,19 +115,23 @@ function onDrop(targetSquare: string) {
   moveInfo.value.to = targetSquare;
   peiceInfo.value = '';
   socket.emit("move", moveInfo.value);
+  moveInfo.value = {'from':'','to':''};
 }
 
 const movePiece = (square: string) => {
+  console.log(square);
+  if(chessMetric.value[square] === undefined && peiceInfo.value === ''){
+    console.log("undefined")
+    return;
+  }
   if(peiceInfo.value === '') {
-    console.log("move started", square);
     peiceInfo.value = square;
   } else {
-    console.log("move end", square);
     moveInfo.value.from = peiceInfo.value ?? "";
     moveInfo.value.to = square;
     peiceInfo.value = '';
-    console.log("---", moveInfo.value.from, moveInfo.value.to);
     socket.emit("move",moveInfo.value);
+    moveInfo.value = {'from':'','to':''};
   }
 }
 
